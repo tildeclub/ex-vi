@@ -1,3 +1,6 @@
+Release 10/10/2024
+* MakeFile defaults to ncurses. 
+
 Release 3/25/05
 * vi no longer dies with a segmentation fault if a line does not fit on the
   screen after an insertion.

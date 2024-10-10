@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_cmdsub.c	1.32 (gritter) 8/6/05";
+static char sccsid[] = "@(#)ex_cmdsub.c	1.29 (gritter) 2/17/05";
 #endif
 #endif
 
@@ -281,7 +281,7 @@ void
 join(int c)
 {
 	register line *a1;
-	char *cp, *cp1;
+	register char *cp, *cp1;
 
 	cp = genbuf;
 	*cp = 0;
@@ -301,9 +301,8 @@ join(int c)
 		}
 		while (*cp++ = *cp1++)
 			if (cp > &genbuf[LBSIZE-2])
-				grow(
-		"Line overflow|Result line of join would be too long",
-					&cp1, NULL, &cp, NULL);
+				error(catgets(catd, 1, 40,
+		"Line overflow|Result line of join would be too long"));
 		cp--;
 	}
 	strcLIN(genbuf);
@@ -478,7 +477,7 @@ pragged(int kill)
 	getline(dol[1]);
 	if (kill)
 		strcLIN(pkill[0]);
-	safecp(gp, linebuf, MAXBSIZE - (gp - genbuf), "Line too long");
+	safecp(gp, linebuf, sizeof genbuf - (gp - genbuf), "Line too long");
 	strcLIN(genbuf);
 	putmark(dol+1);
 	undkind = UNDCHANGE;
@@ -496,7 +495,7 @@ void
 shift(int c, int cnt)
 {
 	register line *addr;
-	char *cp = NULL;
+	register char *cp = NULL;
 	char *dp;
 	register int i;
 
@@ -535,9 +534,8 @@ shift(int c, int cnt)
 #endif
 		}
 		if (cp + strlen(dp = vpastwh(linebuf)) >= &genbuf[LBSIZE - 2])
-			grow(
-		"Line too long|Result line after shift would be too long",
-				&dp, NULL, &cp, NULL);
+			error(catgets(catd, 1, 45,
+		"Line too long|Result line after shift would be too long"));
 		CP(cp, dp);
 		strcLIN(genbuf);
 		putmark(addr);
@@ -564,9 +562,9 @@ tagfind(bool quick)
 	struct stat sbuf;
 	char *savefirstpat = NULL;
 	int	ofailed;
-	char *ft_iofbuf = NULL;
 #ifdef FASTTAG
 	int ft_iof;
+	char ft_iofbuf[MAXBSIZE];
 	off_t mid;	/* assumed byte offset */
 	off_t top, bot;	/* length of tag file */
 #endif
@@ -602,9 +600,6 @@ badtag:
 	 */
 	safecp(tagfbuf, svalue(TAGS), sizeof tagfbuf, "Tag too long");
 	fne = tagfbuf - 1;
-#ifdef	FASTTAG
-	ft_iofbuf = smalloc(MAXBSIZE);
-#endif
 	while (fne) {
 		fn = ++fne;
 		while (*fne && *fne != ' ')
@@ -651,10 +646,10 @@ badtag:
 			tseek(ft_iof, mid);
 			if (mid > 0)	/* to get first tag in file to work */
 				/* scan to next \n */
-				if(tgets(linebuf, LBSIZE, ft_iof)==0)
+				if(tgets(linebuf, sizeof linebuf, ft_iof)==0)
 					goto goleft;
 			/* get the line itself */
-			if(tgets(linebuf, LBSIZE, ft_iof)==0)
+			if(tgets(linebuf, sizeof linebuf, ft_iof)==0)
 				goto goleft;
 #ifdef TDEBUG
 			printf("tag: %o %o %o %s\n", bot, mid, top, linebuf);
@@ -692,7 +687,6 @@ goleft:
 				cp++;
 			if (!*cp)
 badtags:
-				free(ft_iofbuf);
 				serror(catgets(catd, 1, 48,
 					"%s: Bad tags file entry"), lasttag);
 			lp = filebuf;
@@ -726,11 +720,9 @@ badtags:
 				/* Different file.  Do autowrite & get it. */
 				if (!quick) {
 					ckaw();
-					if (chng && dol > zero) {
-						free(ft_iofbuf);
+					if (chng && dol > zero)
 						error(catgets(catd, 1, 49,
 			"No write@since last change (:tag! overrides)"));
-					}
 				}
 				oglobp = globp;
 				strcpy(cmdbuf2, "e! ");
@@ -775,7 +767,6 @@ badtags:
 				} else
 					tflag = 0;
 			}
-			free(ft_iofbuf);
 			return;
 		}	/* end of "for each tag in file" */
 
@@ -788,7 +779,6 @@ badtags:
 		close(io);
 #endif
 	}	/* end of "for each file in path" */
-	free(ft_iofbuf);
 	if (tfcount <= 0)
 		error(catgets(catd, 1, 50, "No tags file"));
 	else
@@ -984,7 +974,7 @@ plines(line *adr1, register line *adr2, bool movedot)
 	pofix();
 	for (addr = adr1; addr <= adr2; addr++) {
 		getline(*addr);
-		pline(lineno(addr), -1);
+		pline(lineno(addr));
 		if (inopen) {
 			putchar('\n' | QUOTE);
 		}

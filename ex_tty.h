@@ -72,7 +72,7 @@
  *
  *	from ex_tty.h	7.5.1 (2.11BSD GTE) 12/9/94
  *
- *	Sccsid @(#)ex_tty.h	1.14 (gritter) 8/4/05
+ *	@(#)ex_tty.h	1.13 (gritter) 12/1/04
  */
 #include "libterm/libterm.h"
 

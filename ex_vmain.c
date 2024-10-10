@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_vmain.c	1.34 (gritter) 8/6/05";
+static char sccsid[] = "@(#)ex_vmain.c	1.29 (gritter) 2/17/05";
 #endif
 #endif
 
@@ -100,11 +100,11 @@ vmain(void)
 	cell esave[TUBECOLS];
 	char *oglobp;
 	short d;
-	line *addr, *odot;
+	line *addr;
 	int ind, nlput;
 	int shouldpo = 0;
 	int onumber = 0, olist = 0;
-	int (*OPline)(int, int) = NULL;
+	void (*OPline)(int) = NULL;
 	int (*OPutchar)(int) = NULL;
 
 	CLOBBGRD(c);
@@ -514,22 +514,13 @@ reread:
 		 */
 		case CTRL('b'):
 			vsave();
-			odot = dot;
 			if (one + vcline != dot && vcnt > 2) {
 				addr = dot - vcline + 2 - (cnt-1)*basWLINES;
 				forbid (addr <= zero);
+				dot = (line*)addr;
 				vcnt = vcline = 0;
-				do {
-					dot = addr;
-					vzop(0, 0, '^');
-					/*
-					 * When a single line fills the
-					 * entire screen, ^B can become
-					 * a no-op without the loop.
-					 */
-				} while (dot == odot && --addr > zero);
-			} else
-				vzop(0, 0, '^');
+			}
+			vzop(0, 0, '^');
 			continue;
 
 		/*
@@ -1273,7 +1264,7 @@ vremote(int cnt, void (*f)(int), int arg)
 void 
 vsave(void)
 {
-	char *temp = smalloc(LBSIZE);
+	char temp[LBSIZE];
 
 	CP(temp, linebuf);
 	if (FIXUNDO && vundkind == VCHNG || vundkind == VCAPU) {
@@ -1299,13 +1290,10 @@ vsave(void)
 	 * almost always be in a read buffer so this may well avoid disk i/o.
 	 */
 	getDOT();
-	if (strcmp(linebuf, temp) == 0) {
-		free(temp);
+	if (strcmp(linebuf, temp) == 0)
 		return;
-	}
 	strcLIN(temp);
 	putmark(dot);
-	free(temp);
 }
 
 #undef	forbid
@@ -1379,13 +1367,7 @@ vzop(int hadcnt, int cnt, register int c)
 		break;
 
 	case '+':
-		if ((vtube[WLINES-1][0] == '~' && vtube[WLINES-1][1] == 0) ||
-				dot == dol) {
-			forbid (addr >= dol);
-		} else {
-			if (addr > dol)
-				addr = dol;
-		}
+		forbid (addr >= dol);
 		/* fall into ... */
 
 	case CR:

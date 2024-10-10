@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_vput.c	1.52 (gritter) 12/25/06";
+static char sccsid[] = "@(#)ex_vput.c	1.49 (gritter) 2/15/05";
 #endif
 #endif
 
@@ -223,7 +223,7 @@ vclrech(bool didphys)
 		splitw = 0;
 		didphys = 1;
 	}
-	if (didphys && vtube)
+	if (didphys)
 		vclrcell(vtube[WECHO], WCOLS);
 	heldech = 0;
 }
@@ -893,7 +893,7 @@ vnpins(int dosync)
 		e = vglitchup(vcline, d);
 		vigoto(e, 0); vclreol();
 		if (dosync) {
-			int (*Ooutchar)(int) = Outchar;
+			int (*Ooutchar)() = Outchar;
 			Outchar = vputchar;
 			vsync(e + 1);
 			Outchar = Ooutchar;
@@ -1454,19 +1454,14 @@ def:
 		}
 	}
 #ifdef	MB
-	if (mb_cur_max > 1) {
-		if ((d = colsc(c&TRIM&~MULTICOL)) > 1) {
+	if (mb_cur_max > 1 && (d = colsc(c&TRIM&~MULTICOL)) > 1) {
+		if ((hold & HOLDPUPD) == 0)
+			*tp |= MULTICOL;
+		while (--d) {
 			if ((hold & HOLDPUPD) == 0)
-				*tp |= MULTICOL;
-			while (--d) {
-				if ((hold & HOLDPUPD) == 0)
-					*++tp = MULTICOL;
-				destcol++;
-				outcol++;
-			}
-		} else if (d == 0) {
-			destcol--;
-			outcol--;
+				*++tp = MULTICOL;
+			destcol++;
+			outcol++;
 		}
 	}
 #endif	/* MB */

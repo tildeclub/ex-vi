@@ -81,7 +81,7 @@
 #ifdef FASTTAG
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_tagio.c	1.12 (gritter) 8/4/05";
+static char sccsid[] = "@(#)ex_tagio.c	1.11 (gritter) 11/27/04";
 #endif
 #endif
 
@@ -92,7 +92,7 @@ static char sccsid[] = "@(#)ex_tagio.c	1.12 (gritter) 8/4/05";
 static long offset = -1;
 static long block = -1;
 static int bcnt = 0;
-static int b_size;
+static int b_size = MAXBSIZE;
 static char *ibuf;
 
 int 
@@ -101,7 +101,6 @@ topen(char *file, char *buf)
 	int fd;
 	struct stat statb;
 
-	b_size = MAXBSIZE;
 	offset = -1;
 	block = -1;
 	if ((fd = open(file, O_RDONLY, 0)) < 0)

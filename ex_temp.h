@@ -72,7 +72,7 @@
  *
  *	from ex_temp.h	7.4 (Berkeley) 5/31/85
  *
- *	Sccsid @(#)ex_temp.h	1.10 (gritter) 8/4/05
+ *	@(#)ex_temp.h	1.8 (gritter) 1/26/02
  */
 
 /*
@@ -111,8 +111,7 @@
 #define	OFFBTS	7		/* 6 */
 #define	OFFMSK	0177		/* 077 */
 #define	SHFT	2		/* 3 */
-#define	TLNMSK	077776
-#else	/* VMUNIX */
+#else
 #ifdef	LARGEF
 #define	BLKMSK	017777777777
 #else
@@ -129,8 +128,7 @@
 #define	OFFBTS	10
 #define	OFFMSK	01777
 #define	SHFT	0
-#define	TLNMSK	017777777776
-#endif	/* VMUNIX */
+#endif
 
 /*
  * The editor uses three buffers into the temporary file (ed uses two

@@ -1,7 +1,8 @@
 /*
  * AT&T Unix 7th Edition memory allocation routines.
  *
- * Modified by Gunnar Ritter, Freiburg i. Br., Germany, February 2005.
+ * Modified for ex by Gunnar Ritter, Freiburg i. Br., Germany,
+ * February 2005.
  *
  * Copyright(C) Caldera International Inc. 2001-2002. All rights reserved.
  *
@@ -35,7 +36,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *	Sccsid @(#)mapmalloc.c	1.7 (gritter) 8/18/05
+ *	Sccsid @(#)mapmalloc.c	1.4 (gritter) 2/20/05
  */
 
 #ifdef	VMUNIX
@@ -44,7 +45,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include <inttypes.h>
 
 #ifndef	MAP_FAILED
 #define	MAP_FAILED	((void *)-1)
@@ -77,6 +77,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <inttypes.h>
 int 
 botch(char *s)
 {
@@ -106,13 +107,6 @@ void dump(const char *msg, uintptr_t t)
 #define ASSERT(p)
 #define	dump(a, b)
 #endif
-
-#ifdef valgrind
-#include <valgrind.h>
-#else	/* !valgrind */
-#define	VALGRIND_MALLOCLIKE_BLOCK(a, b, c, d)
-#define	VALGRIND_FREELIKE_BLOCK(a, b)
-#endif	/* !valgrind */
 
 /*	avoid break bug */
 #ifdef pdp11
@@ -200,8 +194,8 @@ map(void *addr, size_t len)
 	return(mmap(addr,len,PROT_READ|PROT_WRITE,flags,fd,0));
 }
 
-static void *
-mallock(size_t nbytes, union store *start, union store *end)
+void *
+malloc(size_t nbytes)
 {
 	register union store *p, *q;
 	struct pool *o;
@@ -239,9 +233,7 @@ first:	if(allocs[0].ptr==0) {	/*first time for this pool*/
 					if (ua)
 						allocp = p->ptr;
 				}
-				if(q>=p+nw && p+nw>=p && (start==NULL ||
-						p+nw<start || p>end ||
-						p+2==start))
+				if(q>=p+nw && p+nw>=p)
 					goto found;
 			}
 			q = p;
@@ -300,14 +292,7 @@ found:
 	p->ptr = setbusy(allocp);
 	p[1].pool = o;
 	dump("malloc", (uintptr_t)(p + 2));
-	VALGRIND_MALLOCLIKE_BLOCK(p+2,nbytes,0,0);
 	return(p+2);
-}
-
-void *
-malloc(size_t nbytes)
-{
-	return mallock(nbytes, NULL, NULL);
 }
 
 /*	freeing strategy tuned for LIFO allocation
@@ -328,7 +313,6 @@ free(register void *ap)
 	ASSERT(testbusy(p->ptr));
 	p->ptr = clearbusy(p->ptr);
 	ASSERT(p->ptr > allocp && p->ptr <= alloct);
-	VALGRIND_FREELIKE_BLOCK(ap,0);
 }
 
 /*	realloc(p, nbytes) reallocates a block obtained from malloc()
@@ -357,7 +341,7 @@ realloc(void *ap, size_t nbytes)
 		free(p);
 	onw = p[-2].ptr - p;
 	o = p[-1].pool;
-	q = mallock(nbytes, p, &p[onw]);
+	q = malloc(nbytes);
 	if(q==NULL || q==p)
 		return(q);
 	s = p;

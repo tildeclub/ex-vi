@@ -72,7 +72,7 @@
  *
  *	from ex_vis.h	7.4 (Berkeley) 5/31/85
  *
- *	Sccsid @(#)ex_vis.h	1.22 (gritter) 8/6/05
+ *	@(#)ex_vis.h	1.18 (gritter) 3/24/05
  */
 
 /*
@@ -98,13 +98,6 @@ var enum {
 	ONEOPEN		= 2,
 	HARDOPEN	= 3
 } bastate, state;
-
-/*
- * Maximum screen size in visual mode, dynamically set as needed.
- */
-var	short	TUBELINES;
-var	short	TUBECOLS;
-var	short	TUBESIZE;
 
 /*
  * The screen in visual and crtopen is of varying size; the basic
@@ -147,14 +140,13 @@ struct vlinfo {
 	short	vdepth;		/* Depth of displayed line */ /*mjm: was char */
 	short	vflags;		/* Is line potentially dirty ? */
 };
-var	struct vlinfo  *vlinfo;
+var	struct vlinfo  vlinfo[TUBELINES + 2];
 
 #define	DEPTH(c)	(vlinfo[c].vdepth)
 #define	LINE(c)		(vlinfo[c].vliny)
 #define	FLAGS(c)	(vlinfo[c].vflags)
 
 #define	VDIRT	1
-#define	VLONG	2		/* Line does not fit on a single screen */
 
 /*
  * Hacks to copy vlinfo structures around
@@ -178,7 +170,7 @@ var	short	vcnt;
  * data itself.  It is also rearranged during insert mode across line
  * boundaries to make incore work easier.
  */
-var	cell	**vtube;
+var	cell	*vtube[TUBELINES];
 var	cell	*vtube0;
 
 /*

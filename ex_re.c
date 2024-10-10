@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_re.c	1.60 (gritter) 8/6/05";
+static char sccsid[] = "@(#)ex_re.c	1.56 (gritter) 3/25/05";
 #endif
 #endif
 
@@ -359,7 +359,7 @@ substitute(int c)
 			 * but we don't want to break other, reasonable cases.
 			 */
 			while (*loc2) {
-				if (++hopcount > LBSIZE)
+				if (++hopcount > sizeof linebuf)
 					error(catgets(catd, 1, 124,
 							"substitution loop"));
 				if (dosubcon(1, addr) == 0)
@@ -416,10 +416,10 @@ compsub(int ch)
 		/* fall into ... */
 	case '&':
 	redo:
-		if (re.Patbuf == NULL || re.Patbuf[0] == 0)
+		if (re.Patbuf[0] == 0)
 			error(catgets(catd, 1, 127,
 			"No previous re|No previous regular expression"));
-		if (subre.Patbuf == NULL || subre.Patbuf[0] == 0)
+		if (subre.Patbuf[0] == 0)
 			error(catgets(catd, 1, 128,
 	"No previous substitute re|No previous substitute to repeat"));
 		break;
@@ -606,7 +606,7 @@ confirmed(line *a)
 	if (cflag == 0)
 		return (1);
 	pofix();
-	pline(lineno(a), -1);
+	pline(lineno(a));
 	if (inopen)
 		putchar('\n' | QUOTE);
 	c = column(loc1 - 1);
@@ -867,8 +867,7 @@ snote(register int total, register int lines)
 void
 cerror(char *s)
 {
-	if (re.Patbuf != NULL)
-		re.Patbuf[0] = '\0';
+	re.Patbuf[0] = '\0';
 	error(s);
 }
 
@@ -1021,17 +1020,13 @@ compile(int eof, int oknl)
 {
 	int c, d, i, n = 0;
 	char	mb[MB_LEN_MAX+1];
-	char *p, *end;
+	char *p = re.Patbuf, *end = re.Patbuf + sizeof re.Patbuf;
 	int nomagic = value(MAGIC) ? 0 : 1, esc, rcnt = 0;
 	char *rhsp;
 #ifdef	BIT8
 	char *rhsq;
 #endif
 
-	free(re.Patbuf);
-	re.Patbuf = smalloc(2*LBSIZE + 1);
-	p = re.Patbuf;
-	end = &re.Patbuf[2*LBSIZE + 1];
 	if (isalpha(eof) || isdigit(eof))
 		error(catgets(catd, 1, 133,
 	"Regular expressions cannot be delimited by letters or digits"));

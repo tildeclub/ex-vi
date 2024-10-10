@@ -72,7 +72,7 @@
  *
  *	from ex.h	7.7.1.1 (Berkeley) 8/12/86
  *
- *	Sccsid @(#)ex.h	1.57 (gritter) 8/6/05
+ *	@(#)ex.h	1.53 (gritter) 2/17/05
  */
 
 /*
@@ -276,8 +276,9 @@ typedef	sigjmp_buf	JMP_BUF;
 #define	SETJMP(a)	sigsetjmp(a, 1)
 #define	LONGJMP(a, b)	siglongjmp(a, b)
 
-#undef	MAXBSIZE
-#define	MAXBSIZE	(2*LBSIZE)
+#ifndef	MAXBSIZE
+#define	MAXBSIZE	8192	/* Same as in 4.2BSD */
+#endif
 
 #include "ex_tune.h"
 #include "ex_vars.h"
@@ -386,7 +387,7 @@ var	short	erfile;		/* Error message file unit */
 var	line	*fendcore;	/* First address in line pointer space */
 var	char	file[FNSIZE];	/* Working file name */
 var	bool	fixedzero;	/* zero file size was fixed (for visual) */
-var	char	*genbuf;	/* Working buffer when manipulating linebuf */
+var	char	genbuf[MAXBSIZE]; /* Working buffer when manipulating linebuf */
 var	bool	hush;		/* Command line option - was given, hush up! */
 var	char	*globp;		/* (Untyped) input string to command mode */
 var	bool	holdcm;		/* Don't cursor address */
@@ -402,8 +403,7 @@ var	bool	laste;		/* Last command was an "e" (or "rec") */
 var	char	lastmac;	/* Last macro called for ** */
 var	char	lasttag[TAGSIZE];	/* Last argument to a tag command */
 var	char	*linebp;	/* Used in substituting in \n */
-var	char	*linebuf;	/* The primary line buffer */
-var	int	LBSIZE;		/* Size of linebuf */
+var	char	linebuf[LBSIZE];	/* The primary line buffer */
 var	bool	listf;		/* Command should run in list mode */
 var	line	names['z'-'a'+2];	/* Mark registers a-z,' */
 var	int	notecnt;	/* Count for notify (to visual from cmd) */
@@ -456,7 +456,7 @@ var	int	exitoneof;	/* exit command loop on EOF */
 #define	lastchar()	lastc
 #define	outchar(c)	(*Outchar)(c)
 #define	pastwh()	(ignore(skipwh()))
-#define	pline(no, max)	(*Pline)(no, max)
+#define	pline(no)	(*Pline)(no)
 #define	reset()		LONGJMP(resetlab,1)
 #define	resexit(a)	copy(resetlab, a, sizeof (JMP_BUF))
 #define	setexit()	SETJMP(resetlab)
@@ -526,7 +526,7 @@ var	line	*undadot;	/* If we saved all lines, dot reverts here */
 #define	UNDPUT		4
 
 extern	int	(*Outchar)(int);
-extern	int	(*Pline)(int, int);
+extern	void	(*Pline)(int);
 extern	int	(*Putchar)(int);
 
 #define	NOSTR	(char *) 0

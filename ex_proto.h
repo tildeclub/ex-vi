@@ -70,8 +70,7 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *	Sccsid @(#)ex_proto.h	1.33 (gritter) 8/6/05
+ *	@(#)ex_proto.h	1.28 (gritter) 2/19/05
  */
 
 /*
@@ -192,12 +191,12 @@ extern int widthok(int c);
 extern int GETWC(char *);
 /* ex_put.c */
 extern int (*setlist(int))(int);
-extern int (*setnumb(int))(int, int);
+extern void (*setnumb(int))(int);
 extern int listchar(int);
 extern int normchar(register int);
 extern void slobber(int);
-extern int numbline(int, int);
-extern int normline(int, int);
+extern void numbline(int);
+extern void normline(int);
 extern int putchar(int);
 extern int termchar(int);
 extern void flush2(void);
@@ -325,8 +324,6 @@ extern void onemt(int);
 extern char *movestr(char *, const char *);
 extern char *safecp(char *, const char *, size_t, char *, ...);
 extern char *safecat(char *, const char *, size_t, char *, ...);
-extern void grow(char *, char **, char **, char **, char **);
-extern void *smalloc(size_t);
 /* ex_tagio.c */
 extern int topen(char *, char *);
 extern int tseek(int, off_t);
@@ -510,7 +507,6 @@ extern void vswitch(int);
 extern int	wskipleft(char *, char *);
 extern int	wskipright(char *, char *);
 extern int	wsamechar(char *, int);
-extern int	xwcwidth(wint_t);
 #endif	/* MB */
 /* ex_vput.c */
 extern void vclear(void);

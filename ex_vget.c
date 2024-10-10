@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_vget.c	1.31 (gritter) 8/6/05";
+static char sccsid[] = "@(#)ex_vget.c	1.29 (gritter) 2/15/05";
 #endif
 #endif
 
@@ -406,7 +406,7 @@ int
 readecho(int c)
 {
 	register char *sc = cursor;
-	register int (*OP)(int, int);
+	register void (*OP)(int);
 	bool waste;
 	register int OPeek;
 

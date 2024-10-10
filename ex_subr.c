@@ -73,7 +73,7 @@
 
 #ifndef	lint
 #ifdef	DOSCCS
-static char sccsid[] = "@(#)ex_subr.c	1.41 (gritter) 12/25/06";
+static char sccsid[] = "@(#)ex_subr.c	1.37 (gritter) 2/15/05";
 #endif
 #endif
 
@@ -84,7 +84,7 @@ static char sccsid[] = "@(#)ex_subr.c	1.41 (gritter) 12/25/06";
 #include "ex_tty.h"
 #include "ex_vis.h"
 
-short	lastsc;
+static short	lastsc;
 
 /*
  * Random routines, in alphabetical order.
@@ -631,14 +631,14 @@ plural(long i)
 			: catgets(catd, 1, 179, "s"));
 }
 
-short	vcntcol;
+static short	vcntcol;
 
 int 
 qcolumn(register char *lim, register char *gp)
 {
 	register int x = 0, n = 1;
 	int	c, i;
-	int (*OO)(int);
+	int (*OO)();
 
 	OO = Outchar;
 	Outchar = qcount;
@@ -651,7 +651,7 @@ qcolumn(register char *lim, register char *gp)
 			n = skipright(linebuf, lim);
 		x = lim[n], lim[n] = 0;
 	}
-	pline(0, inopen ? WLINES*WCOLS : -1);
+	pline(0);
 	if (lim != NULL)
 		lim[n] = x;
 	if (gp)
@@ -851,7 +851,7 @@ char *
 vfindcol(int i)
 {
 	register char *cp;
-	register int (*OO)(int) = Outchar;
+	register int (*OO)() = Outchar;
 	int	c, n = 0;
 
 	Outchar = qcount;
@@ -1150,40 +1150,4 @@ safecat(char *s1, const char *s2, size_t max, char *msg, ...)
 	exitex(0175);
 	/*NOTREACHED*/
 	return NULL;
-}
-
-/*
- * Grow the line and generic buffers.
- */
-void
-grow(char *msg, char **tolb0, char **tolb1, char **togb0, char **togb1)
-{
-	char *nlb, *ngb = NULL;
-
-	if ((nlb = realloc(linebuf, LBSIZE + 4096)) == NULL ||
-			(ngb = realloc(genbuf, 2 * (LBSIZE + 4096))) == NULL) {
-		synced();
-		error(msg);
-	}
-	if (tolb0)
-		*tolb0 += nlb - linebuf;
-	if (tolb1)
-		*tolb1 += nlb - linebuf;
-	if (togb0)
-		*togb0 += ngb - genbuf;
-	if (togb1)
-		*togb1 += ngb - genbuf;
-	linebuf = nlb;
-	genbuf = ngb;
-	LBSIZE += 4096;
-}
-
-void *
-smalloc(size_t size)
-{
-	void	*vp;
-
-	if ((vp = malloc(size)) == NULL)
-		error("no space");
-	return vp;
 }

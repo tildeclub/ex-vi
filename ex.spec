@@ -12,8 +12,6 @@ Vendor: Gunnar Ritter <Gunnar.Ritter@pluto.uni-freiburg.de>
 URL: <http://ex-vi.sourceforge.net>
 BuildRoot: %{_tmppath}/%{name}-root
 
-Requires: /etc/termcap
-
 # prefix applies to bindir, libexecdir, and mandir.
 %global debug_package %{nil}
 %define prefix          /usr

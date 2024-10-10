@@ -205,13 +205,13 @@ OSTYPE	= -DVMUNIX
 #
 # You may also get terminfo access by using the ncurses library.
 #
-#TERMLIB	= ncurses
+TERMLIB	= ncurses
 #
 # The preferred choice for ex on Linux distributions, other systems that
 # provide a good termcap file, or when setting the TERMCAP environment
 # variable is deemed sufficient, is the included 2.11BSD termcap library.
 #
-TERMLIB	= termlib
+#TERMLIB	= termlib
 
 #
 # Since ex uses sbrk() internally, a conflict with the libc's version of

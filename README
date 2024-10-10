@@ -32,7 +32,7 @@ Then type 'make' and 'make install'.
 It is possible to build a RPM file directly from the source distribution
 by executing
 
-        rpmbuild -tb ex-<version>.tar.bz2
+        rpmbuild -tb ex-vi-<version>.tar.gz
 
 Note that the RPM spec installs the binary in /usr/5bin by default to
 avoid conflicts with vendor files in /usr/bin. The default locations

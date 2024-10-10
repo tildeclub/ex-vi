@@ -6,7 +6,7 @@ Name: ex-vi
 Version: 10102024
 Release: 1
 License: BSD
-Source: %{name}-%{version}.tar.gz
+Source: %{name}.tar.gz
 Group: System Environment/Base
 Vendor: Gunnar Ritter <Gunnar.Ritter@pluto.uni-freiburg.de>
 URL: <http://ex-vi.sourceforge.net>

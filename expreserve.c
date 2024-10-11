@@ -270,9 +270,9 @@ main(int argc, char **argv)
 }
 
 #ifdef	notdef
-char	pattern[] =	"/usr/preserve/Exaa`XXXXX";
+char	pattern[] =	"/usr/archaic/preserve/Exaa`XXXXX";
 #else
-char	pattern[] =	"/var/preserve/Exa`XXXXXXXXXX";
+char	pattern[] =	"/var/archaic/preserve/Exa`XXXXXXXXXX";
 #endif
 
 /*

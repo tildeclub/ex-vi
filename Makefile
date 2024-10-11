@@ -79,11 +79,11 @@
 # Destinations for installation. $(PRESERVEDIR) is used for recovery files.
 # It will get mode 1777.
 #
-PREFIX		= /usr/local
+PREFIX		= /usr/archaic
 BINDIR		= $(PREFIX)/bin
 LIBEXECDIR	= $(PREFIX)/libexec
 MANDIR		= $(PREFIX)/share/man
-PRESERVEDIR	= /var/preserve
+PRESERVEDIR	= /var/archaic/preserve
 
 #
 # DESTDIR is prepended to the installation paths. It is mostly useful

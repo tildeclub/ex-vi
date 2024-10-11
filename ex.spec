@@ -14,10 +14,10 @@ BuildRoot: %{_tmppath}/%{name}-root
 
 # prefix applies to bindir, libexecdir, and mandir.
 %global debug_package %{nil}
-%define prefix          /usr
-%define bindir          %{prefix}/5bin
-%define libexecdir      %{prefix}/5lib
-%define mandir          %{prefix}/share/man/5man
+%define prefix          /usr/archaic
+%define bindir          %{prefix}/bin
+%define libexecdir      %{prefix}/lib
+%define mandir          %{prefix}/share/man/man
 
 %define preservedir     /var/preserve
 
@@ -46,6 +46,7 @@ rm -rf %{buildroot}
 make %{makeflags}
 
 %install
+[ -d %{preservedir} ] || mkdir -p %{buildroot}%{preservedir}
 make DESTDIR=%{buildroot} %{makeflags} install
 
 %clean

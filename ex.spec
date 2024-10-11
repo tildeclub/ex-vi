@@ -19,7 +19,7 @@ BuildRoot: %{_tmppath}/%{name}-root
 %define libexecdir      %{prefix}/lib
 %define mandir          %{prefix}/share/man/man
 
-%define preservedir     /var/preserve
+%define preservedir     /var/archaic/preserve
 
 # install command
 %define ucbinstall      install
